@@ -2,7 +2,7 @@
   "name": "omi-idl-extension",
   "displayName": "omi-idl-extension",
   "description": "",
-  "version": "0.1.12",
+  "version": "0.1.13",
   "engines": {
     "vscode": "^1.42.0"
   },
