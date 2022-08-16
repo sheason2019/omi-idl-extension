@@ -1,0 +1,74 @@
+{
+  "name": "omi-idl-extension",
+  "displayName": "omi-idl-extension",
+  "description": "",
+  "version": "0.1.12",
+  "engines": {
+    "vscode": "^1.42.0"
+  },
+  "publisher": "sheason2019",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sheason2019/omi.git"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onLanguage:omi"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "languages": [
+      {
+        "id": "omi",
+        "extensions": [
+          ".omi"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "semanticTokenTypes": [
+      {
+        "id": "formatProperty",
+        "description": "类型的修饰符，如optional何repeated"
+      }
+    ],
+    "configurationDefaults": {
+      "[omi]": {
+        "editor.semanticHighlighting.enabled": true
+      },
+      "editor.semanticTokenColorCustomizations": {
+        "rules": {
+          "format": "#569CD6"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "yarn run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "yarn run compile && yarn run lint",
+    "lint": "eslint src --ext ts",
+    "test": "node ./out/test/runTest.js"
+  },
+  "devDependencies": {
+    "@types/glob": "^7.2.0",
+    "@types/mocha": "^9.1.1",
+    "@types/node": "16.x",
+    "@types/vscode": "^1.42.0",
+    "@typescript-eslint/eslint-plugin": "^5.31.0",
+    "@typescript-eslint/parser": "^5.31.0",
+    "@vscode/test-electron": "^2.1.5",
+    "eslint": "^8.20.0",
+    "glob": "^8.0.3",
+    "mocha": "^10.0.0",
+    "typescript": "^4.7.4"
+  },
+  "gitHead": "7c6c12d799840f0db3f2ff679818beeed04ce305",
+  "dependencies": {
+    "@omi-stack/omi-ast-parser": "^0.1.11"
+  }
+}
