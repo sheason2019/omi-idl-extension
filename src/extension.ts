@@ -127,7 +127,6 @@ const provider: vscode.DocumentSemanticTokensProvider = {
 
 // 插件入口
 export function activate(context: vscode.ExtensionContext) {
-  console.log("omi-idl start up");
   diagnosticCollection = vscode.languages.createDiagnosticCollection("omi");
   context.subscriptions.push(diagnosticCollection);
 }
@@ -137,5 +136,3 @@ vscode.languages.registerDocumentSemanticTokensProvider(
   provider,
   legend
 );
-
-console.log("any thing");
