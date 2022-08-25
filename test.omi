@@ -1,0 +1,39 @@
+
+
+struct UserProperty
+{
+  int id;
+  // 属性标识符
+  string propertyId;
+
+  // 属性名称
+  string propertyName;
+
+  // 属性数据类型
+  PropertyType propertyType;
+
+  // 属性值
+  string propertyValue;
+
+  // 最大值最小值限制
+  double maxValue;
+  double minValue;
+
+  // 长度限制
+  int maxLength;
+  int minLength;
+
+  // 注释
+  string comment;
+}
+
+struct User {
+  int id;
+  string username;
+  string password;
+  int createTime;
+}
+
+enum PropertyType {
+  User,
+}
