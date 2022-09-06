@@ -37,3 +37,7 @@ struct User {
 enum PropertyType {
   User,
 }
+
+service UserManagement {
+  void Login();
+}

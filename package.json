@@ -2,7 +2,7 @@
   "name": "omi-idl-extension",
   "displayName": "omi-idl-extension",
   "description": "",
-  "version": "0.2.6",
+  "version": "0.2.8",
   "engines": {
     "vscode": "^1.42.0"
   },
@@ -71,6 +71,6 @@
   },
   "gitHead": "7c6c12d799840f0db3f2ff679818beeed04ce305",
   "dependencies": {
-    "@omi-stack/omi-ast-parser": "^0.2.6"
+    "@omi-stack/omi-ast-parser": "^0.2.8"
   }
 }
