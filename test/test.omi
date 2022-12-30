@@ -1,5 +1,3 @@
-
-
 struct UserProperty
 {
   int id;
@@ -22,9 +20,6 @@ struct UserProperty
   // 长度限制
   int maxLength;
   int minLength;
-
-  // 注释
-  string comment;
 }
 
 struct User {
@@ -32,12 +27,10 @@ struct User {
   string username;
   string password;
   int createTime;
-}
-
-enum PropertyType {
-  User,
+  string word;
 }
 
 service UserManagement {
   void Login();
+  User GetUser();
 }

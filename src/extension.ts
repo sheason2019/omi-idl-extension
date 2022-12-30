@@ -1,14 +1,5 @@
 import * as vscode from "vscode";
-import { OmiParser } from "@omi-stack/omi-ast-parser";
-
-// 代码高亮
-interface IParsedToken {
-  line: number;
-  startCharacter: number;
-  length: number;
-  tokenType: string;
-  tokenModifiers: string[];
-}
+import { fetchToken, IToken } from "@omi-stack/omi-idl";
 
 const tokenTypes = new Map<string, number>();
 const tokenModifiers = new Map<string, number>();
@@ -18,6 +9,7 @@ let ctx: vscode.ExtensionContext;
 
 const legend = (function () {
   const tokenTypesLegend = [
+    "label",
     "comment",
     "string",
     "keyword",
@@ -33,7 +25,6 @@ const legend = (function () {
     "variable",
     "parameter",
     "property",
-    "label",
   ];
   tokenTypesLegend.forEach((tokenType, index) =>
     tokenTypes.set(tokenType, index)
@@ -59,27 +50,33 @@ const legend = (function () {
   );
 })();
 
-function _parseText(text: string, uri: vscode.Uri): IParsedToken[] {
-  const parser = new OmiParser();
-  parser.setContent(text);
-  try {
-    diagnosticCollection.clear();
-    parser.build();
-  } catch (e) {
-    const err = e as Error;
-    const position = parser.getPosition();
-    const currentToken = parser.getCurrentToken();
-    const range = new vscode.Range(
-      position.row,
-      position.col - currentToken.token.length,
-      position.row,
-      position.col
-    );
-    const diagnostic = new vscode.Diagnostic(range, err.message);
-    diagnosticCollection.set(uri, [diagnostic]);
+async function parseText(text: string, uri: vscode.Uri): Promise<IToken[]> {
+  const output = await fetchToken(uri.path, text);
+  if (!output) {
+    return [];
   }
-  const tokens = parser.getAllToken();
-  return tokens;
+  if (output.Type !== "output/token") {
+    return [];
+  }
+
+  const tokenOutput = output.Payload;
+  diagnosticCollection.clear();
+
+  if (tokenOutput?.ErrorBlocks) {
+    const list: vscode.Diagnostic[] = [];
+    for (let err of tokenOutput.ErrorBlocks) {
+      const range = new vscode.Range(
+        err.FromRow,
+        err.FromCol,
+        err.ToRow,
+        err.ToCol
+      );
+      list.push(new vscode.Diagnostic(range, err.Message));
+    }
+    diagnosticCollection.set(uri, list);
+  }
+
+  return tokenOutput?.TokenList ?? [];
 }
 
 function encodeTokenType(tokenType: string): number {
@@ -105,23 +102,27 @@ function encodeTokenModifiers(strTokenModifiers: string[]): number {
 }
 
 const provider: vscode.DocumentSemanticTokensProvider = {
-  provideDocumentSemanticTokens(
+  async provideDocumentSemanticTokens(
     document: vscode.TextDocument,
     token: vscode.CancellationToken
-  ): vscode.SemanticTokens | null | undefined {
-    const allTokens = _parseText(document.getText(), document.uri);
+  ): Promise<vscode.SemanticTokens | null | undefined> {
+    try {
+      const allTokens = await parseText(document.getText(), document.uri);
 
-    const builder = new vscode.SemanticTokensBuilder();
-    allTokens.forEach((token) => {
-      builder.push(
-        token.line,
-        token.startCharacter,
-        token.length,
-        encodeTokenType(token.tokenType),
-        encodeTokenModifiers(token.tokenModifiers)
-      );
-    });
-    return builder.build();
+      const builder = new vscode.SemanticTokensBuilder();
+      allTokens.forEach((token) => {
+        builder.push(
+          token.line,
+          token.startCharacter,
+          token.length,
+          encodeTokenType(token.tokenType),
+          encodeTokenModifiers(token.tokenModifiers ?? [])
+        );
+      });
+      return builder.build();
+    } catch (e) {
+      console.log(e);
+    }
   },
 };
 
